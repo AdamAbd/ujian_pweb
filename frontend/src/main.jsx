@@ -6,6 +6,7 @@ import './index.css'
 import App from './App.jsx'
 import Login from './Login.jsx';
 import Register from './Register.jsx';
+import AddNote from './AddNote.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -15,6 +16,7 @@ createRoot(document.getElementById('root')).render(
           <Route index element={<App />} />
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />
+          <Route path="add" element={<AddNote />} />
           {/* <Route path="blogs" element={<Blogs />} />
           <Route path="*" element={<NoPage />} /> */}
         </Route>
