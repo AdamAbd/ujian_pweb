@@ -16,7 +16,7 @@ if ($method === 'POST') {
 
         // Check if the email already exists
         $checkEmailStmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
-        $checkEmailStmt->bind_param("s", $email);
+        $checkEmailStmt->bind_param("s", $data->email);
         $checkEmailStmt->execute();
         $checkEmailStmt->store_result();
 
