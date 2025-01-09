@@ -13,7 +13,7 @@ if ($method === 'POST') {
 
     if (!empty($data->user_id)) {
         $conn = getConnect();
-        $stmt = $conn->prepare("SELECT id, username FROM users WHERE id = ?");
+        $stmt = $conn->prepare("SELECT id, username, email FROM users WHERE id = ?");
         $stmt->bind_param("i", $data->user_id);
         $stmt->execute();
         $result = $stmt->get_result();

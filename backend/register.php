@@ -11,19 +11,33 @@ $method = $_SERVER["REQUEST_METHOD"];
 if ($method === 'POST') {
     $data = json_decode(file_get_contents("php://input"));
 
-    if (!empty($data->username) && !empty($data->password)) {
+    if (!empty($data->username) && !empty($data->email) && !empty($data->password)) {
         $conn = getConnect();
-        $stmt = $conn->prepare("INSERT INTO users (username, password) VALUES (?, ?)");
-        $hashedPassword = password_hash($data->password, PASSWORD_BCRYPT);
-        $stmt->bind_param("ss", $data->username, $hashedPassword);
 
-        if ($stmt->execute()) {
-            echo json_encode(['message' => 'User Registered']);
+        // Check if the email already exists
+        $checkEmailStmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
+        $checkEmailStmt->bind_param("s", $email);
+        $checkEmailStmt->execute();
+        $checkEmailStmt->store_result();
+
+        if ($checkEmailStmt->num_rows > 0) {
+            echo json_encode(['message' => 'Email already registered']);
         } else {
-            echo json_encode(['message' => 'User Registration Failed']);
+            // Proceed with inserting the new user
+            $stmt = $conn->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
+            $hashedPassword = password_hash($data->password, PASSWORD_BCRYPT);
+            $stmt->bind_param("sss", $data->username, $data->email, $hashedPassword);
+
+            if ($stmt->execute()) {
+                echo json_encode(['message' => 'User Registered']);
+            } else {
+                echo json_encode(['message' => 'User Registration Failed']);
+            }
+
+            $stmt->close();
         }
 
-        $stmt->close();
+        $checkEmailStmt->close();
         $conn->close();
     } else {
         echo json_encode(['message' => 'Invalid Input']);

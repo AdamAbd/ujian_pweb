@@ -11,10 +11,10 @@ $method = $_SERVER["REQUEST_METHOD"];
 if ($method === 'POST') {
     $data = json_decode(file_get_contents("php://input"));
 
-    if (!empty($data->username) && !empty($data->password)) {
+    if (!empty($data->email) && !empty($data->password)) {
         $conn = getConnect();
-        $stmt = $conn->prepare("SELECT id, password FROM users WHERE username = ?");
-        $stmt->bind_param("s", $data->username);
+        $stmt = $conn->prepare("SELECT id, password FROM users WHERE email = ?");
+        $stmt->bind_param("s", $data->email);
         $stmt->execute();
         $stmt->bind_result($id, $hashedPassword);
 
