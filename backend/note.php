@@ -52,6 +52,8 @@ function updateTask()
     $data = json_decode(file_get_contents("php://input"));
 
     if (isset($_GET['id'])) {
+        $id = $_GET['id'];
+
         $conn = getConnect();
         $query = "UPDATE notes SET ";
         $params = [];
@@ -68,8 +70,6 @@ function updateTask()
             $params[] = $data->content;
             $types .= "s";
         }
-
-        $id = $_GET['id'];
 
         $query = rtrim($query, ", ") . " WHERE id = ?";
         $params[] = $id;
@@ -93,11 +93,12 @@ function updateTask()
 
 function deleteTask()
 {
-    $data = json_decode(file_get_contents("php://input"));
-    if (!empty($data->id)) {
+    if (isset($_GET['id'])) {
+        $id = $_GET['id'];
+
         $conn = getConnect();
         $stmt = $conn->prepare("DELETE FROM notes WHERE id = ?");
-        $stmt->bind_param("i", $data->id);
+        $stmt->bind_param("i", $id);
 
         if ($stmt->execute()) {
             echo json_encode(['message' => 'Note Deleted']);

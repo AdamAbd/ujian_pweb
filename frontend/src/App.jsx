@@ -7,21 +7,46 @@ function App() {
 
   // Fetch notes from the API
   useEffect(() => {
-    const fetchNotes = async () => {
+    fetchNotes();
+  }, []);
+
+  // Function to fetch notes
+  const fetchNotes = async () => {
+    try {
+      const response = await fetch("http://localhost/ujian_pweb/backend/note.php");
+      if (!response.ok) {
+        throw new Error("Failed to fetch notes");
+      }
+      const data = await response.json();
+      setNotes(data); // Assuming the API returns an array of notes
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  // Handler for deleting a note
+  const handleDelete = async (noteId) => {
+    if (window.confirm("Are you sure you want to delete this note?")) {
       try {
-        const response = await fetch("http://localhost/ujian_pweb/backend/note.php");
+        const response = await fetch(`http://localhost/ujian_pweb/backend/note.php?id=${noteId}`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ id: noteId }),
+        });
+
         if (!response.ok) {
-          throw new Error("Failed to fetch notes");
+          setError("Failed to delete note");
+        } else {
+          // Update the state to remove the deleted note
+          setNotes(notes.filter((note) => note.id !== noteId));
         }
-        const data = await response.json();
-        setNotes(data); // Assuming the API returns an array of notes
       } catch (err) {
         setError(err.message);
       }
-    };
-
-    fetchNotes();
-  }, []);
+    }
+  };
 
   return (
     <div>
@@ -31,13 +56,12 @@ function App() {
         <div className="relative overflow-x-auto">
           <div className="flex items-center justify-between flex-column md:flex-row flex-wrap space-y-4 md:space-y-0 py-4 bg-white">
             <div>
-              <button
-                id="dropdownActionButton"
+              <a
+                href="add"
                 className="inline-flex items-center text-gray-500 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-3 py-1.5"
-                type="button"
               >
                 Tambah Data
-              </button>
+              </a>
             </div>
           </div>
           <table className="w-full text-sm text-left text-gray-500">
@@ -66,21 +90,19 @@ function App() {
                   <tr key={note.id} className="bg-white border-b hover:bg-gray-50">
                     <td className="px-6 py-4">{note.title}</td>
                     <td className="px-6 py-4">{note.content}</td>
-                    <td className="flex gap-2 px-6 py-4">
+                    <td className="flex gap-4 px-6 py-4">
                       <a
                         href={`edit/${note.id}`}
-                        type="button"
                         className="font-medium text-blue-600 hover:underline"
                       >
                         Edit
                       </a>
-                      <a
-                        href="#"
-                        type="button"
+                      <button
+                        onClick={() => handleDelete(note.id)}
                         className="font-medium text-red-600 hover:underline"
                       >
                         Delete
-                      </a>
+                      </button>
                     </td>
                   </tr>
                 ))
