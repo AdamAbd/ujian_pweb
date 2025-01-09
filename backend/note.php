@@ -51,7 +51,7 @@ function updateTask()
 {
     $data = json_decode(file_get_contents("php://input"));
 
-    if (!empty($data->id)) {
+    if (isset($_GET['id'])) {
         $conn = getConnect();
         $query = "UPDATE notes SET ";
         $params = [];
@@ -69,8 +69,10 @@ function updateTask()
             $types .= "s";
         }
 
+        $id = $_GET['id'];
+
         $query = rtrim($query, ", ") . " WHERE id = ?";
-        $params[] = $data->id;
+        $params[] = $id;
         $types .= "i";
 
         $stmt = $conn->prepare($query);

@@ -68,7 +68,7 @@ function App() {
                     <td className="px-6 py-4">{note.content}</td>
                     <td className="flex gap-2 px-6 py-4">
                       <a
-                        href="#"
+                        href={`edit/${note.id}`}
                         type="button"
                         className="font-medium text-blue-600 hover:underline"
                       >
